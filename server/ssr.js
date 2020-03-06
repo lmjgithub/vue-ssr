@@ -3,52 +3,62 @@ const path = require("path");
 const uuidv4 = require("uuid/v4");
 const LRU = require("lru-cache");
 const { createBundleRenderer } = require("vue-server-renderer");
+const devServer = require("./dev-server");
 
 const isProd = process.env.NODE_ENV === "production";
 const HtmlMinifier = require("html-minifier").minify;
 
 module.exports.initRenderer = function(app) {
-  const template = fs.readFileSync(
-    path.resolve(__dirname, "../public/index.html"),
-    "utf-8"
-  );
-  const createRenderer = (bundle, options) => {
-    return createBundleRenderer(
-      bundle,
-      Object.assign(options, {
-        basedir: path.resolve(__dirname, "../dist/web"),
-        runInNewContext: false,
-        shouldPreload: (file, type) => {
-          console.log(type, file);
-          if (type === "script") {
-            return false;
-          } else {
-            true;
-          }
-        },
-        shouldPrefetch: (type, file) => {
-          if (type === "script") {
-            return false;
-          } else {
-            true;
-          }
-        }
-      })
+  return new Promise((resolve, reject) => {
+    const template = fs.readFileSync(
+      path.resolve(__dirname, "../public/index.html"),
+      "utf-8"
     );
-  };
-  if (true) {
-    const bundle = require(path.resolve(
-      __dirname,
-      "../dist/web/vue-ssr-server-bundle.json"
-    ));
-    const clientManifest = require(path.resolve(
-      __dirname,
-      "../dist/web/vue-ssr-client-manifest.json"
-    ));
-    const renderer = createRenderer(bundle, { template, clientManifest });
+    const createRenderer = (bundle, options) => {
+      return createBundleRenderer(
+        bundle,
+        Object.assign(options, {
+          basedir: path.resolve(__dirname, "../dist/web"),
+          runInNewContext: false,
+          shouldPreload: (file, type) => {
+            console.log(type, file);
+            if (type === "script") {
+              return false;
+            } else {
+              true;
+            }
+          },
+          shouldPrefetch: (type, file) => {
+            if (type === "script") {
+              return false;
+            } else {
+              true;
+            }
+          }
+        })
+      );
+    };
+    if (isProd) {
+      const bundle = require(path.resolve(
+        __dirname,
+        "../dist/web/vue-ssr-server-bundle.json"
+      ));
+      const clientManifest = require(path.resolve(
+        __dirname,
+        "../dist/web/vue-ssr-client-manifest.json"
+      ));
+      const renderer = createRenderer(bundle, { template, clientManifest });
 
-    return { readyPromise: Promise.resolve(), renderer };
-  }
+      resolve({ renderer, app });
+    } else {
+      devServer(app, (bundle, options) => {
+        try {
+          renderer = createRenderer(bundle, options);
+          resolve({ renderer, app });
+        } catch (error) {}
+      });
+    }
+  });
 };
 
 const serverInfo =
@@ -66,7 +76,7 @@ function renderErrorHandler({ err, req, res }) {
     );
 }
 
-module.exports.render = function(req, res, ssr) {
+module.exports.render = function(req, res, renderer) {
   const s = Date.now();
   res.setHeader("Content-Type", "text/html");
   res.setHeader("Server", serverInfo);
@@ -76,7 +86,7 @@ module.exports.render = function(req, res, ssr) {
     url: req.url
   };
 
-  ssr.renderer.renderToString(context, (err, html) => {
+  renderer.renderToString(context, (err, html) => {
     if (err) {
       console.error(err, req.url);
 

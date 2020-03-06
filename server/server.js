@@ -23,17 +23,23 @@ app.use("/public", serve("public", true));
 
 const ssr = initRenderer(app);
 
-app.get("*", (req, res) => {
-  if (req.url === "/") {
-    res.redirect(301, '/process-pool')
-  } else {
-    render(req, res, ssr);
-  }
-});
 
-const port = 3000;
-const server = app.listen(port, "0.0.0.0", () => {
-  console.log(`server started at ${port}`);
-});
-// fix slow network issue
-server.keepAliveTimeout = 60000 * 2;
+ssr.then(({ app, renderer }) => {
+  app.get("*", (req, res) => {
+    if (req.url === "/") {
+      res.redirect(301, '/process-pool')
+    } else {
+      render(req, res, renderer);
+    }
+  });
+  const port = 3000;
+  const server = app.listen(port, "0.0.0.0", () => {
+    console.log(`server started at ${port}`);
+  });
+  // fix slow network issue
+  server.keepAliveTimeout = 60000 * 2;
+})
+
+
+
+

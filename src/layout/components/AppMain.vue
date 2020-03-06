@@ -1,6 +1,6 @@
 <template>
   <section class="app-main">
-    <span>main</span>
+    <span>main1122</span>
     <transition name="fade-transform" mode="out-in">
       <keep-alive :include="cachedViews">
         <router-view :key="key" />
