@@ -1,10 +1,15 @@
 const path = require("path");
+const fs = require("fs");
 const { createBundleRenderer } = require("vue-server-renderer");
 const devServer = require("./dev-server");
 
 const isProd = process.env.NODE_ENV === "production";
 module.exports = app => {
   return new Promise((resolve, reject) => {
+    const template = fs.readFileSync(
+      path.resolve(__dirname, "../public/index.html"),
+      "utf-8"
+    );
     const createRenderer = (bundle, options) => {
       return createBundleRenderer(
         bundle,
