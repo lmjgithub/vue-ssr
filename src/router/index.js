@@ -4,14 +4,14 @@ import DefaultLayout from "@/layout/DefaultLayout";
 
 Vue.use(Router);
 
-const routerConfig = [
+/* const routerConfig = [
   {
     path: "/",
     component: DefaultLayout,
     children: [
       {
-        path: '',
-        redirect:'/process-pool'
+        path: "",
+        redirect: "/process-pool"
       },
       {
         path: "process-pool",
@@ -23,10 +23,17 @@ const routerConfig = [
       }
     ]
   }
-  /* {
-    path: "*",
-    redirect: "/"
-  } */
+]; */
+
+const routerConfig = [
+  {
+    path: "/",
+    component: () => import("@/pages/process-pool/index")
+  },
+  {
+    path: "/public-pool",
+    component: () => import("@/pages/public-pool/index")
+  }
 ];
 
 export function createRouter() {

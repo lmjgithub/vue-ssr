@@ -1,8 +1,13 @@
 <template>
   <div class="wrap">
-    1231111
-    <router-link :to="'/public-pool'">go public-pool</router-link>
-    <a href="/public-pool">go public-pool</a>
+    12311111xxx1
+    <input />
+    <div>
+      <router-link :to="'/public-pool'">go public-pool</router-link>
+    </div>
+    <div>
+      <a href="/public-pool">go public-pool</a>
+    </div>
     <!-- <el-form ref="form" :model="form" label-width="80px"></el-form> -->
   </div>
 </template>

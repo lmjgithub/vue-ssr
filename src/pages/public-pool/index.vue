@@ -1,8 +1,12 @@
 <template>
   <div>
-    public-pool
-    <router-link :to="'/process-pool'">go process-pool</router-link>
-    <a href="/process-pool">go process-pool</a>
+    public-pool1
+    <div>
+      <router-link :to="'/'">go process-pool</router-link>
+    </div>
+    <div>
+      <a href="/">go process-pool</a>
+    </div>
   </div>
 </template>
 <script>

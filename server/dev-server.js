@@ -46,7 +46,6 @@ module.exports = (app, cb) => {
   serverCompiler.watch({}, (err, stats) => {
     if (err) throw err;
     stats = stats.toJson();
-    console.log(stats.hasErrors);
     if (stats.errors.length) return;
     bundle = JSON.parse(readFile(mfs, "vue-ssr-server-bundle.json"));
     update();
@@ -72,42 +71,10 @@ module.exports = (app, cb) => {
   );
 
   const clientCompiler = webpack(clientConfig);
+
   const devMiddleware = webpackDevMiddleware(clientCompiler, {
-    stats: { colors: true },
-    reporter: (middlewareOptions, options) => {
-      const { log, state, stats } = options;
-
-      if (state) {
-        const displayStats = middlewareOptions.stats !== false;
-
-        if (displayStats) {
-          if (stats.hasErrors()) {
-            log.error(stats.toString(middlewareOptions.stats));
-          } else if (stats.hasWarnings()) {
-            log.warn(stats.toString(middlewareOptions.stats));
-          } else {
-            log.info(stats.toString(middlewareOptions.stats));
-          }
-        }
-
-        let message = "Compiled syccessfully";
-
-        if (stats.hasErrors()) {
-          message = "failed to compile";
-        } else if (stats.hasWarnings()) {
-          message = "compiled with warnings";
-        }
-        log.info(message);
-
-        clearConsole();
-
-        update();
-      } else {
-        log.info("Compiling...");
-      }
-    },
-    noInfo: true,
-    serverSideRender: false
+    publicPath: clientConfig.output.publicPath,
+    noInfo: true
   });
 
   app.use(devMiddleware);
@@ -131,9 +98,15 @@ module.exports = (app, cb) => {
     clientManifest = JSON.parse(
       readFile(devMiddleware.fileSystem, "vue-ssr-client-manifest.json")
     );
-
+    update();
     webTime = stats.time;
   });
 
-  app.use(webpackHotMiddleware(clientCompiler));
+  app.use(
+    webpackHotMiddleware(clientCompiler, {
+      log: console.log,
+      path: "/__webpack_hmr",
+      heartbeat: 10 * 1000
+    })
+  );
 };
