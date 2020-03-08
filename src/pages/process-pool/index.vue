@@ -1,6 +1,6 @@
 <template>
   <div class="wrap">
-    12311111xxx1
+131
     <input />
     <div>
       <router-link :to="'/public-pool'">go public-pool</router-link>

@@ -34,6 +34,7 @@ module.exports = app => {
       );
     };
     let renderer = null;
+    let isFirst = true;
     if (isProd) {
       const bundle = require(path.resolve(
         __dirname,
@@ -47,7 +48,10 @@ module.exports = app => {
     } else {
       devServer(app, (bundle, options) => {
         try {
-          renderer = createRenderer(bundle, options);
+          if (isFirst) {
+            renderer = createRenderer(bundle, options);
+            isFirst = false;
+          }
           resolve(app);
         } catch (error) {}
       });

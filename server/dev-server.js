@@ -33,9 +33,9 @@ module.exports = (app, cb) => {
         console.log("DONE");
         const buildCommand = `npm run build`;
         isFrist = false;
+        cb(bundle, { template, clientManifest });
       }
 
-      cb(bundle, { template, clientManifest });
     }
   };
 
@@ -43,6 +43,7 @@ module.exports = (app, cb) => {
   const serverCompiler = webpack(serverConfig);
   const mfs = new MFS();
   serverCompiler.outputFileSystem = mfs;
+  // 
   serverCompiler.watch({}, (err, stats) => {
     if (err) throw err;
     stats = stats.toJson();
@@ -50,13 +51,14 @@ module.exports = (app, cb) => {
     bundle = JSON.parse(readFile(mfs, "vue-ssr-server-bundle.json"));
     update();
   });
-  serverCompiler.plugin("done", stats => {
-    stats = stats.toJson();
-    stats.errors.forEach(err => console.error(err));
-    stats.warnings.forEach(err => console.warn(err));
-    if (stats.errors.length) return;
-    serverTime = stats.time;
-  });
+  // 计算服务更新时间
+  // serverCompiler.hooks.done.tap("webpack-dev-server", stats => {
+  //   stats = stats.toJson();
+  //   stats.errors.forEach(err => console.error(err));
+  //   stats.warnings.forEach(err => console.warn(err));
+  //   if (stats.errors.length) return;
+  //   serverTime = stats.time;
+  // });
 
   // client
   clientConfig.entry.app = [
@@ -89,7 +91,7 @@ module.exports = (app, cb) => {
     update();
   });
 
-  clientCompiler.plugin("done", stats => {
+  clientCompiler.hooks.done.tap("webpack-dev-server", stats => {
     stats = stats.toJson();
     stats.errors.forEach(err => console.error(err));
     stats.warnings.forEach(err => console.warn(err));
