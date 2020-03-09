@@ -12,8 +12,11 @@
 <script>
 export default {
   name: "public-pool",
+  asyncData({ store }) {
+    return store.dispatch("changeTestData");
+  },
   created() {
-    console.log(this.$store);
+    // console.log(this.$store);
   }
 };
 </script>

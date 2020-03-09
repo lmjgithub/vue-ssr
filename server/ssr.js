@@ -71,6 +71,11 @@ module.exports = app => {
       let html;
       try {
         html = await renderer.renderToString(context);
+        // html = await new Promise(resolve => {
+        //   setTimeout(() => {
+        //     resolve('1231');
+        //   }, 3000);
+        // });
       } catch (error) {}
       res.set("Content-Type", "text/html");
       res.status(200);

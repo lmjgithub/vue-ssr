@@ -4,7 +4,7 @@ Vue.mixin({
   beforeRouteUpdate(to, from, next) {
     const { asyncData } = this.$options;
     if (asyncData) {
-      asyncData({ store: his.$store, route: to })
+      asyncData({ store: this.$store, route: to })
         .then(next)
         .catch(next);
     } else {
@@ -31,7 +31,6 @@ router.onReady(() => {
     if (!activated.length) {
       return next();
     }
-
     Promise.all(
       activated.map(c => {
         if (c.asyncData) {

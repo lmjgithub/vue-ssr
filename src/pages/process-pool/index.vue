@@ -16,7 +16,7 @@
 export default {
   name: "process-pool",
   asyncData({ store }) {
-    store.dispatch("changeTestData");
+    return store.dispatch("changeTestData");
   },
   computed: {
     text() {
@@ -24,7 +24,7 @@ export default {
     }
   },
   created() {
-    console.log(this.$store.state);
+    // console.log(this.$store.state);
   }
 };
 </script>
