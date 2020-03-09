@@ -1,6 +1,7 @@
 <template>
   <div class="wrap">
-131
+    131
+    {{text}}
     <input />
     <div>
       <router-link :to="'/public-pool'">go public-pool</router-link>
@@ -13,7 +14,18 @@
 </template>
 <script>
 export default {
-  name: "process-pool"
+  name: "process-pool",
+  asyncData({ store }) {
+    store.dispatch("changeTestData");
+  },
+  computed: {
+    text() {
+      return this.$store.state["testData"];
+    }
+  },
+  created() {
+    console.log(this.$store.state);
+  }
 };
 </script>
 <style lang="less" scoped>

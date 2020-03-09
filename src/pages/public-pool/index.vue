@@ -11,6 +11,9 @@
 </template>
 <script>
 export default {
-  name: "public-pool"
+  name: "public-pool",
+  created() {
+    console.log(this.$store);
+  }
 };
 </script>
